@@ -8,6 +8,7 @@ library(dplyr)
 library(stringr)
 library(googlesheets4)
 library(lubridate)
+library(rsconnect)
 
 #removes the authorization for the Google Sheet
 sheets_deauth()
@@ -120,18 +121,18 @@ server <- function(input, output){
         
         cat <- input$category
         country <- input$country
-        input1
-        input2
+        input1 <- input1
+        input2 <- input2
         
-        if (country[1] == "" & cat[1] =="") {
-            fsources <- sources
-        } else {
-            fsources <- sources %>% 
+        fsources <- sources %>% 
                 filter(population_location == country[1] | population_location == country[2] |
                            population_location == country[3] | population_location == country[4])
-        }
         
+        fsources <- fsources %>% 
+            filter(category == cat[1] | category == cat[2] |
+                       category == cat[3] | category == cat[4])
         
+    
         
         fsources
         
