@@ -1,0 +1,57 @@
+---
+title: "google_covid"
+author: "Andrew"
+date: "5/7/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+
+library(dplyr)
+library(ggplot2)
+library(stringr)
+library(tidyr)
+library(googlesheets4)
+library(lubridate)
+
+#removes the authorization for the Google Sheet
+sheets_deauth()
+
+#using googlesheets4 to API data from Google Sheet into R
+sources <- read_sheet("1crmXg4Rrth7xpxxgDY6cstRlZYIGa6EOPblp8XFbCGo", sheet = "sources")
+
+#select just the columns are that needed
+sources <- select(sources, status, category, author, date, publication, title, population_location)
+
+#remove all sources that have not yet been extracted
+sources <- filter(sources, status == "finished")
+
+#convert date strings to dates
+sources$date <- ymd(sources$date)
+
+#remove all NA that are remaining... this should be zero if we input the data well
+sources <- sources %>% 
+  filter(!is.na(date)) %>% 
+  filter(!is.na(population_location)) %>%
+  filter(!is.na(title))
+
+#this should just be country names after cleaning up the data as well
+sources_location <- sources %>% 
+  count(population_location)
+
+#list of categories
+sources_cat <- sources %>%
+  group_by(category) %>% 
+  distinct(category)
+
+#list of countries
+sources_count<- sources %>%
+  group_by(population_location) %>% 
+  distinct(population_location)
+  
+
+
+
+
+
+```
