@@ -17,7 +17,7 @@ sheets_deauth()
 sources <- read_sheet("1crmXg4Rrth7xpxxgDY6cstRlZYIGa6EOPblp8XFbCGo", sheet = "sources")
 
 #select just the columns are that needed
-sources <- select(sources, status, category, author, date, publication, title, population_location)
+sources <- select(sources, status, category, author, date, publication, title, country, topics, age, url)
 
 #remove all sources that have not yet been extracted
 sources <- filter(sources, status == "finished")
@@ -28,22 +28,39 @@ sources$date <- ymd(sources$date)
 #remove all NA that are remaining... this should be zero if we input the data well
 sources <- sources %>% 
     filter(!is.na(date)) %>% 
-    filter(!is.na(population_location)) %>%
+    filter(!is.na(country)) %>%
     filter(!is.na(title))
+
+sources$country <- str_to_lower(sources$country) 
+sources$topics <- str_to_lower(sources$topics)
 
 #this should just be country names after cleaning up the data as well
 sources_location <- sources %>% 
-    count(population_location)
+    count(country)
 
 #list of categories
 sources_cat <- sources %>%
-    group_by(category) %>% 
-    distinct(category)
+    group_by(topics) %>% 
+    distinct(topics)
+
+sources_cat <- unique(unlist(strsplit(sources_cat$topics, ",")))
+
+sources_cat <- sources_cat %>% 
+    trimws() %>% 
+    str_to_lower() %>% 
+    unique()
 
 #list of countries
 sources_count<- sources %>%
-    group_by(population_location) %>% 
-    distinct(population_location)
+    group_by(country) %>% 
+    distinct(country)
+
+sources_count <- unique(unlist(strsplit(sources_count$country, ",")))
+
+sources_count <- sources_count %>% 
+    trimws() %>% 
+    str_to_lower() %>% 
+    unique()
 
 #date_variable
 input1 <- 0
@@ -120,20 +137,22 @@ server <- function(input, output){
     output$table <- DT::renderDataTable({
         
         cat <- input$category
-        country <- input$country
+        country_input <- input$country
         input1 <- input1
         input2 <- input2
         
+        #how do I do this for all countries selected besides for hard coding for the number of countries (country_input[n])
         fsources <- sources %>% 
-                filter(population_location == country[1] | population_location == country[2] |
-                           population_location == country[3] | population_location == country[4])
+            filter(grepl(country_input[1], country) | grepl(country_input[2], country) | grepl(country_input[3], country) |
+                   grepl(country_input[4], country))
+        
+        
         
         fsources <- fsources %>% 
-            filter(category == cat[1] | category == cat[2] |
-                       category == cat[3] | category == cat[4])
+            filter(grepl(cat[1], topics) | grepl(cat[2], topics) | grepl(cat[3], topics) |
+                       grepl(cat[4], topics))
         
-    
-        
+        #this output table only appears if there is a country and a topic selected. If not, it has an error. One must chose a country or a topic
         fsources
         
     })
