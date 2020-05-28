@@ -16,8 +16,6 @@ sheets_deauth()
 #using googlesheets4 to API data from Google Sheet into R
 sources <- read_sheet("1crmXg4Rrth7xpxxgDY6cstRlZYIGa6EOPblp8XFbCGo", sheet = "sources")
 
-#select just the columns are that needed
-sources <- select(sources, status, category, author, date, publication, title, country, topics, age, url)
 
 #remove all sources that have not yet been extracted
 sources <- filter(sources, status == "finished")
@@ -31,8 +29,12 @@ sources <- sources %>%
     filter(!is.na(country)) %>%
     filter(!is.na(title))
 
+#select just the columns are that needed
+sources <- select(sources, category, country, author, date, publication, title, country, topics, age, url)
+
 sources$country <- str_to_lower(sources$country) 
 sources$topics <- str_to_lower(sources$topics)
+sources$age <- str_to_lower(sources$age)
 
 #this should just be country names after cleaning up the data as well
 sources_location <- sources %>% 
@@ -46,6 +48,18 @@ sources_cat <- sources %>%
 sources_cat <- unique(unlist(strsplit(sources_cat$topics, ",")))
 
 sources_cat <- sources_cat %>% 
+    trimws() %>% 
+    str_to_lower() %>% 
+    unique()
+
+#list of ages
+sources_age <- sources %>%
+    group_by(age) %>% 
+    distinct(age)
+
+sources_age <- unique(unlist(strsplit(sources_age$age, ",")))
+
+sources_age <- sources_age %>% 
     trimws() %>% 
     str_to_lower() %>% 
     unique()
@@ -92,23 +106,18 @@ ui<-dashboardPage(skin = "blue",
                                       box(width = NULL,
                                           HTML("<br/> <h3><b>COVID-19 SOURCES</b></h3> <br/>
 
-<h4><b>Search for Peer-reviwed, preprint and instituion publications</b> <br> </br>
+<h4><b>Search for peer-reviewed, preprint and instituion publications</b> <br> </br>
 This is a database of publications that have been reported and publicly released since early February. You 
-can search the database by priority, date, and country. Our team has extracted the data contained
+can search the database by topic, date, and country. Our team has extracted the data contained
 in these papers and a method for data sharing will be coming soon.</br> </br>
 </h4>")
                                           
                                       ),
                                       box(selectInput("category", "Select Category", sources_cat, selected = "", multiple = TRUE),
+                                          selectInput("age", "Select Age Group", sources_age, selected = "", multiple = TRUE),
                                           selectInput("country", "Select Country", sources_count, selected = "", multiple = TRUE)),
-                                      box(dateInput(input1, label = "Earliest Date", value = "", min = NULL, max = NULL,
-                                                    format = "yyyy-mm-dd", startview = "month", weekstart = 0,
-                                                    language = "en", width = NULL, autoclose = TRUE,
-                                                    datesdisabled = NULL, daysofweekdisabled = NULL),
-                                          dateInput(input2, label = "Latest Date", value = "", min = NULL, max = NULL,
-                                                    format = "yyyy-mm-dd", startview = "month", weekstart = 0,
-                                                    language = "en", width = NULL, autoclose = TRUE,
-                                                    datesdisabled = NULL, daysofweekdisabled = NULL))),
+                                      box(HTML("<br/> <h5><b>Topic Definitions</b></h5> <br/>")),
+                                      ),
                                   box(width = NULL, dataTableOutput('table'))
                           ),
                           
@@ -138,6 +147,7 @@ server <- function(input, output){
         
         cat <- input$category
         country_input <- input$country
+        age_select <- input$age
         input1 <- input1
         input2 <- input2
         
@@ -146,14 +156,19 @@ server <- function(input, output){
             filter(grepl(country_input[1], country) | grepl(country_input[2], country) | grepl(country_input[3], country) |
                    grepl(country_input[4], country))
         
-        
+        fsources <- fsources %>% 
+            filter(grepl(age_select[1], age) | grepl(age_select[2], age) | grepl(age_select[3], age))
         
         fsources <- fsources %>% 
             filter(grepl(cat[1], topics) | grepl(cat[2], topics) | grepl(cat[3], topics) |
                        grepl(cat[4], topics))
         
         #this output table only appears if there is a country and a topic selected. If not, it has an error. One must chose a country or a topic
-        fsources
+        datatable(fsources, extensions = 'Buttons', options = list(
+            dom = 'Bfrtip',
+            buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
+        ))
+        
         
     })
     
