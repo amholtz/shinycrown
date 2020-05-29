@@ -116,7 +116,45 @@ in these papers and a method for data sharing will be coming soon.</br> </br>
                                       box(selectInput("category", "Select Category", sources_cat, selected = NULL, multiple = TRUE),
                                           selectInput("age", "Select Age Group", sources_age, selected = NULL, multiple = TRUE),
                                           selectInput("country", "Select Country", sources_count, selected = NULL, multiple = TRUE)),
-                                      box(HTML("<br/> <h5><b>Topic Definitions</b></h5> <br/>")),
+                                      
+                                      
+                                      box(
+                                          
+                                          bsCollapse(id = "topic_definitions", open = "Panel 2",
+                                                     bsCollapsePanel("Transmission", "This topic includes information on transmission dynamics including infectious period, 
+                                                                     incubation period, serial interval, basic reproduction number, asymptomatic and prodromal transmission, 
+                                                                     duration of hospital admission, time from onset to hospital admission, time from onset to quarantine,
+                                                                     time from onset to isolation and time from onset to death.", style = "info"),
+                                                     
+                                                     bsCollapsePanel("Severity", "There is a wide range of illness severity. This topic includes data on critical care, 
+                                                                     including mechanical ventilation and ICU admission, as well as data about the severity of the disease 
+                                                                     stratified by characteristics such as age or comorbidities.", style = "info"),
+                                                     
+                                                     bsCollapsePanel("Risk Groups", "It is important to understand risk factors for COVID-19 infection and severe infection.
+                                                                     We want to understand the dynamics of COVID-19 in groups with particular characteristics. Data reported
+                                                                     is stratified by patient characteristics, age, and comorbidities. Currently, we are focusing on vulnerable 
+                                                                     groups—outbreaks in long-term care or retirement homes, outbreaks in prisons, and outcomes in children..", style = "info"),
+                                                     
+                                                     bsCollapsePanel("Symptoms", "We’re interested in understanding what symptoms COVID-19 causes, from the most common symptoms to
+                                                                     the uncommon ones. We report on the number of patients in each study with the symptom and the percentage of
+                                                                     patients with that symptoms.", style = "info"),
+                                                     
+                                                     bsCollapsePanel("Diagnostics", "This topic includes data on the sensitivity and specificity of different diagnostic tools,
+                                                                     including RT-PCR from nasopharyngeal, throat and stool swabs, chest CT findings, and serology for IgM 
+                                                                     antibodies. ", style = "info"),
+                                                     
+                                                     bsCollapsePanel("Viral Load", "This topic includes reverse CT values and viral RNA copies.", style = "info"),
+                                                     
+                                                     bsCollapsePanel("Health Services", "Social distancing has been implemented to reduce the burden on health services. This 
+                                                                     topic incorporates data on health capacity and health services utilization, including surge capacity, ICU capacity,
+                                                                     ICU occupancy, and health workforce.", style = "info"),
+                                                     
+                                                     bsCollapsePanel("Super-Spreading", "Super-spreading, defined here as one primary case infecting four or more others during a clearly defined
+                                                                     event, has been documented globally. The date, location and duration of event, type of event, setting, number
+                                                                     of attendees, number of secondary cases, and the secondary attack rate are reported.", style = "info")
+                                                     )),
+                                      
+                                    
                                       ),
                                   box(width = NULL, dataTableOutput('table'))
                           ),

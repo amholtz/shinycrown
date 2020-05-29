@@ -5,8 +5,8 @@ account: aholtz
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 2268770
-bundleId: 3205845
+bundleId: 3206086
 url: https://aholtz.shinyapps.io/shinycrown/
-when: 1590778400.25434
+when: 1590783040.38295
 asMultiple: FALSE
 asStatic: FALSE
