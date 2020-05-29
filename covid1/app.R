@@ -9,6 +9,7 @@ library(stringr)
 library(googlesheets4)
 library(lubridate)
 library(rsconnect)
+library(shinyBS)
 
 #removes the authorization for the Google Sheet
 sheets_deauth()
