@@ -113,9 +113,9 @@ in these papers and a method for data sharing will be coming soon.</br> </br>
 </h4>")
                                           
                                       ),
-                                      box(selectInput("category", "Select Category", sources_cat, selected = "", multiple = TRUE),
-                                          selectInput("age", "Select Age Group", sources_age, selected = "", multiple = TRUE),
-                                          selectInput("country", "Select Country", sources_count, selected = "", multiple = TRUE)),
+                                      box(selectInput("category", "Select Category", sources_cat, selected = NULL, multiple = TRUE),
+                                          selectInput("age", "Select Age Group", sources_age, selected = NULL, multiple = TRUE),
+                                          selectInput("country", "Select Country", sources_count, selected = NULL, multiple = TRUE)),
                                       box(HTML("<br/> <h5><b>Topic Definitions</b></h5> <br/>")),
                                       ),
                                   box(width = NULL, dataTableOutput('table'))
@@ -151,20 +151,40 @@ server <- function(input, output){
         input1 <- input1
         input2 <- input2
         
-        #how do I do this for all countries selected besides for hard coding for the number of countries (country_input[n])
-        fsources <- sources %>% 
-            filter(grepl(country_input[1], country) | grepl(country_input[2], country) | grepl(country_input[3], country) |
-                   grepl(country_input[4], country))
+        if(all(!is.null(country_input))) {
         
-        fsources <- fsources %>% 
-            filter(grepl(age_select[1], age) | grepl(age_select[2], age) | grepl(age_select[3], age))
+        sources <- sources %>% 
+            filter(
+                grepl(country_input[1], country) |
+                    grepl(country_input[2], country) | 
+                    grepl(country_input[3], country) |
+                    grepl(country_input[4], country)
+            )
+        }
         
-        fsources <- fsources %>% 
-            filter(grepl(cat[1], topics) | grepl(cat[2], topics) | grepl(cat[3], topics) |
-                       grepl(cat[4], topics))
+        if(all(!is.null(age_select))) {
+            
+        sources <- sources %>% 
+            filter(
+                grepl(age_select[1], age) |
+                    grepl(age_select[2], age) | 
+                    grepl(age_select[3], age)
+            )
+        }
+        
+        if(all(!is.null(cat))) {
+            
+        sources <- sources %>% 
+            filter(
+                grepl(cat[1], topics) |
+                    grepl(cat[2], topics) | 
+                    grepl(cat[3], topics) |
+                    grepl(cat[4], topics)
+            )
+        }
         
         #this output table only appears if there is a country and a topic selected. If not, it has an error. One must chose a country or a topic
-        datatable(fsources, extensions = 'Buttons', options = list(
+        datatable(sources, extensions = 'Buttons', options = list(
             dom = 'Bfrtip',
             buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
         ))
