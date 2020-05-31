@@ -92,6 +92,7 @@ ui<-dashboardPage(skin = "blue",
                       sidebarMenu(id = "tabs",
                                   menuItem("Sources", tabName = "sources", icon = icon("file-text-o")),
                                   menuItem("Super Spreading Events", tabName = "super", icon = icon("calendar")),
+                                  menuItem("About Us", tabName = "about", icon = icon("calendar")),
                                   menuItem("Health Services", tabName = "Health Services", icon = icon("line-chart"))
                       ),
                       hr()
@@ -169,6 +170,19 @@ in these papers and a method for data sharing will be coming soon.</br> </br>
 Overall data quality was low, however six high quality SSEs were identified. 
 Half of these events were social gatherings where meals were shared. 
 Across all sources, the most common event types include, social gatherings, medical settings, and workplace events. </br> </br>
+</h4>")
+                                          
+                                      ))),
+                          tabItem(tabName = "about",
+                                  fluidRow(
+                                      box(#img(src = "myimage.jpg"),
+                                          HTML("<br/> <h3><b>About Us </b></h3> <br/>
+
+<h4><b>Rapid Review Data Extraction</b> This team is made up of MSc Students at the London School of Hygiene and Tropical Medicine, who wanted
+to organize and extract the data that is being published by journals and by institutions such as WHO, ECCD, and CDC. This group is 
+made up of clinicans, epidemiologists, health economists, biologist, and infectious disease modellers who use their subject areas to
+comb through the vast publications published each day.  <br> We also work with organizations to collate specific research topics for them. If your
+team would like a specific topic searched, please reach out. </br> </br>
 </h4>")
                                           
                                       ))),
